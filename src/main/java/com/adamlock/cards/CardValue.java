@@ -5,6 +5,11 @@
  */
 package com.adamlock.cards;
 
+/**
+ * An enumeration which defines the value of every card.
+ * 
+ * @author Adam
+ */
 public enum CardValue {
 	TWO('2', "Two", 0x0001), THREE('3', "Three", 0x0002), FOUR('4', "Four",
 			0x0004), FIVE('5', "Five", 0x0008), SIX('6', "Six", 0x0010), SEVEN(

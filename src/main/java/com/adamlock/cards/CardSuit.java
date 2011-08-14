@@ -5,6 +5,11 @@
  */
 package com.adamlock.cards;
 
+/**
+ * An enumeration that defines the suit of every card
+ * 
+ * @author Adam
+ */
 public enum CardSuit {
 	/**
 	 * Clubs

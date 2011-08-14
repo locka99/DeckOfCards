@@ -6,10 +6,10 @@
 package com.adamlock.cards;
 
 /**
- * @author Adam Lock
+ * An exception thrown when a deck is empty and no more cards can be dealt from
+ * it.
  * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author Adam Lock
  */
 public class EmptyDeckException extends Exception {
 	/**

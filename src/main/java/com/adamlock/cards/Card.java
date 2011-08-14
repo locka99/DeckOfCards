@@ -10,7 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Immutable class represents a card with a suit and a value.
+ * An immutable class that represents a card with a suit and a value. Cards are
+ * immutable and the constructor is private to force users to use getCard to get
+ * a card with a particular suit and value. Therefore there are exactly 52
+ * instances of Card which can be compared by reference or by .equals.
  * 
  * @author Adam Lock
  */

@@ -7,13 +7,19 @@ package com.adamlock.cards;
 
 import java.security.SecureRandom;
 
+/**
+ * A random number generator used by the deck for shuffling. By default the RNG
+ * is the standard Java supplied one but it can be a secure RNG if necessary.
+ * 
+ * @author Adam
+ */
 public class Random {
 	private final java.util.Random random;
 
 	public Random() {
 		this(false);
 	}
-	
+
 	public Random(boolean useSecureRandom) {
 		if (useSecureRandom) {
 			random = new SecureRandom();

@@ -12,10 +12,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * @author Adam Lock
+ * A class that represents a deck of cards. By default the deck contains exactly
+ * one card of each suit and value, i.e. the standard 52 cards.
  * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
+ * @author Adam
+ * 
  */
 public class Deck implements Cloneable {
 	/**
