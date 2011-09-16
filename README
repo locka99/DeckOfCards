@@ -1,0 +1,17 @@
+This is an implementation of a deck of cards released under the LGPLv3. See the COPYING
+file for more information.
+
+Primary classes:
+
+Deck - represents a deck which consists of 52 cards which are drawn or undrawn or some combination of the two
+Card - A card within a deck. Note cards are immutable and only 52 ever exist irrespective of the number of references to them.
+CardSuit - the suit of a card
+CardValue - the value of a card.
+
+Shuffling is done by assigning a random number to each card in the deck and sorting the deck according to that
+random number.
+
+To Build use Maven:
+
+mvn clean install
+
