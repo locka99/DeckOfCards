@@ -1,17 +1,30 @@
-This is an implementation of a deck of cards released under the LGPLv3. See the COPYING
-file for more information.
+This is an implementation of a deck of cards released under the LGPLv3. 
+
+See the COPYING file for more information about LGPLv3.
 
 Primary classes:
 
-Deck - represents a deck which consists of 52 cards which are drawn or undrawn or some combination of the two
-Card - A card within a deck. Note cards are immutable and only 52 ever exist irrespective of the number of references to them.
-CardSuit - the suit of a card
-CardValue - the value of a card.
+Deck        Represents a deck which consists of 52 cards which are drawn or
+            undrawn or some combination of the two.
+Card        A card within a deck. Note cards are immutable and only 52 ever exist 
+            irrespective of the number of references to them.
+CardSuit    The suit of a card
+CardValue   The value of a card.
+Random      A random number generator. It utlitises either the standard Java RNG or
+            a secure RNG depending on how it is called.
 
-Shuffling is done by assigning a random number to each card in the deck and sorting the deck according to that
-random number.
+Build instructions:
 
-To Build use Maven:
+You build using Maven like so:
 
 mvn clean install
+
+Add DeckOfCards to another project by including a dependency on this POM, e.g. 
+
+<dependency>
+  <groupId>com.adamlock</groupId>
+  <artifactId>DeckOfCards</artifactId>
+  <version>3.8.1</version>
+  <scope>1.0-SNAPSHOT</scope>
+</dependency>
 
