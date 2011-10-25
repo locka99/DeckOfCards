@@ -6,26 +6,26 @@
 package com.adamlock.cards;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * A class that represents a deck of cards. By default the deck contains exactly
- * one card of each suit and value, i.e. the standard 52 cards.
+ * @author Adam Lock
  * 
- * @author Adam
- * 
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class Deck implements Cloneable {
 	/**
 	 * The deck is a linked list for easy slicing and dicing.
 	 */
-	private LinkedList<Card> deck = new LinkedList<Card>();
+	protected LinkedList<Card> deck = new LinkedList<Card>();
 
 	/**
-	 * Draw pile allows previously draw cards to be inspected
+	 * Drawn pile allows previously drawn cards to be inspected
 	 */
 	private LinkedList<Card> drawn = new LinkedList<Card>();
 
@@ -34,9 +34,9 @@ public class Deck implements Cloneable {
 		public int compare(ShuffleInfo o1, ShuffleInfo o2) {
 			// Walk the array of bytes until one is deemed to be
 			// larger than the other
-			final int length = o1.order.length;
-			final byte[] b1 = o1.order;
-			final byte[] b2 = o2.order;
+			final int length = o1.getOrder().length;
+			final byte[] b1 = o1.getOrder();
+			final byte[] b2 = o2.getOrder();
 			for (int i = 0; i < length; i++) {
 				if (b1[i] < b2[i])
 					return -1;
@@ -67,7 +67,7 @@ public class Deck implements Cloneable {
 	 */
 	private void createDeck() {
 		deck.clear();
-		deck.addAll(Card.getAllCards());
+		deck.addAll(Arrays.asList(Card.values()));
 		drawn.clear();
 	}
 
@@ -96,35 +96,8 @@ public class Deck implements Cloneable {
 		// Now create the deck again in the new order
 		deck.clear();
 		for (ShuffleInfo si : shuffleList) {
-			deck.add(si.card);
+			deck.add(si.getCard());
 		}
-	}
-
-	/**
-	 * Add an array of cards to the deck
-	 * 
-	 * @param cards
-	 */
-	public void addCard(Card[] cards) {
-		if (cards == null) {
-			throw new IllegalArgumentException("Must supply cards");
-		}
-		for (Card c : cards) {
-			addCard(c);
-		}
-	}
-
-	/**
-	 * Add a card to the deck
-	 * 
-	 * @param card
-	 *            card to be added
-	 */
-	public void addCard(Card card) {
-		if (card == null) {
-			throw new IllegalArgumentException("Must supply a card");
-		}
-		deck.add(card);
 	}
 
 	/**
@@ -139,7 +112,7 @@ public class Deck implements Cloneable {
 		for (Iterator<Card> i = deck.iterator(); i.hasNext();) {
 			final Card c = i.next();
 			for (Card c2 : cards) {
-				if (c.equals(c2)) {
+				if (c == c2) {
 					i.remove();
 					drawn.add(c);
 					continue;
@@ -159,9 +132,10 @@ public class Deck implements Cloneable {
 		}
 		for (Iterator<Card> i = deck.iterator(); i.hasNext();) {
 			final Card c = i.next();
-			if (c.equals(card)) {
+			if (c == card) {
 				i.remove();
 				drawn.add(c);
+				return;
 			}
 		}
 	}
@@ -265,6 +239,39 @@ public class Deck implements Cloneable {
 			drawn.add(c);
 		}
 		return c;
+	}
+
+	/**
+	 * Add an array of cards to the deck
+	 * 
+	 * @param cards
+	 */
+	public void replaceCard(Card[] cards) {
+		if (cards == null) {
+			throw new IllegalArgumentException("Must supply cards");
+		}
+		for (Card c : cards) {
+			replaceCard(c);
+		}
+	}
+
+	/**
+	 * Replaces a card from the drawn pile back onto the end of the deck.
+	 * 
+	 * @param card
+	 *            card to be added
+	 */
+	public void replaceCard(Card card) {
+		if (card == null) {
+			throw new IllegalArgumentException("Must supply a card");
+		}
+		for (Iterator<Card> i = drawn.iterator(); i.hasNext();) {
+			if (i.next() == card) {
+				i.remove();
+				deck.add(card);
+				return;
+			}
+		}
 	}
 
 	/*

@@ -12,18 +12,26 @@ package com.adamlock.cards;
  */
 class ShuffleInfo {
 	/** 4 bytes = 32 bits of randomness */
-	final byte[] order = new byte[4];
+	private final byte[] order = new byte[4];
 
 	/** The card */
-	final Card card;
+	private final Card card;
 
 	/**
 	 * Random number generator used for shuffling the deck
 	 */
-	private static final Random random = new Random();
+	private static final Random RANDOM = new Random();
 
 	ShuffleInfo(Card card) {
 		this.card = card;
-		random.next(order);
+		RANDOM.next(order);
+	}
+
+	public byte[] getOrder() {
+		return order;
+	}
+
+	public Card getCard() {
+		return card;
 	}
 }

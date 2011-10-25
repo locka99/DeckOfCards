@@ -5,88 +5,73 @@
  */
 package com.adamlock.cards;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * An immutable class that represents a card with a suit and a value. Cards are
- * immutable and the constructor is private to force users to use getCard to get
- * a card with a particular suit and value. Therefore there are exactly 52
- * instances of Card which can be compared by reference or by .equals.
+ * Immutable class represents a card with a suit and a value.
  * 
  * @author Adam Lock
  */
-public class Card implements Comparable<Card> {
-	static private final Card heartsCards[];
+public enum Card implements Comparable<Card> {
 
-	static private final Card diamondsCards[];
+	TWO_HEARTS(CardValue.TWO, CardSuit.HEARTS), THREE_HEARTS(CardValue.THREE,
+			CardSuit.HEARTS), FOUR_HEARTS(CardValue.FOUR, CardSuit.HEARTS), FIVE_HEARTS(
+			CardValue.FIVE, CardSuit.HEARTS), SIX_HEARTS(CardValue.SIX,
+			CardSuit.HEARTS), SEVEN_HEARTS(CardValue.SEVEN, CardSuit.HEARTS), EIGHT_HEARTS(
+			CardValue.EIGHT, CardSuit.HEARTS), NINE_HEARTS(CardValue.NINE,
+			CardSuit.HEARTS), TEN_HEARTS(CardValue.TEN, CardSuit.HEARTS), JACK_HEARTS(
+			CardValue.JACK, CardSuit.HEARTS), QUEEN_HEARTS(CardValue.QUEEN,
+			CardSuit.HEARTS), KING_HEARTS(CardValue.KING, CardSuit.HEARTS), ACE_HEARTS(
+			CardValue.ACE, CardSuit.HEARTS),
 
-	static private final Card clubsCards[];
+	TWO_DIAMONDS(CardValue.TWO, CardSuit.DIAMONDS), THREE_DIAMONDS(
+			CardValue.THREE, CardSuit.DIAMONDS), FOUR_DIAMONDS(CardValue.FOUR,
+			CardSuit.DIAMONDS), FIVE_DIAMONDS(CardValue.FIVE, CardSuit.DIAMONDS), SIX_DIAMONDS(
+			CardValue.SIX, CardSuit.DIAMONDS), SEVEN_DIAMONDS(CardValue.SEVEN,
+			CardSuit.DIAMONDS), EIGHT_DIAMONDS(CardValue.EIGHT,
+			CardSuit.DIAMONDS), NINE_DIAMONDS(CardValue.NINE, CardSuit.DIAMONDS), TEN_DIAMONDS(
+			CardValue.TEN, CardSuit.DIAMONDS), JACK_DIAMONDS(CardValue.JACK,
+			CardSuit.DIAMONDS), QUEEN_DIAMONDS(CardValue.QUEEN,
+			CardSuit.DIAMONDS), KING_DIAMONDS(CardValue.KING, CardSuit.DIAMONDS), ACE_DIAMONDS(
+			CardValue.ACE, CardSuit.DIAMONDS),
 
-	static private final Card spadesCards[];
+	TWO_SPADES(CardValue.TWO, CardSuit.SPADES), THREE_SPADES(CardValue.THREE,
+			CardSuit.SPADES), FOUR_SPADES(CardValue.FOUR, CardSuit.SPADES), FIVE_SPADES(
+			CardValue.FIVE, CardSuit.SPADES), SIX_SPADES(CardValue.SIX,
+			CardSuit.SPADES), SEVEN_SPADES(CardValue.SEVEN, CardSuit.SPADES), EIGHT_SPADES(
+			CardValue.EIGHT, CardSuit.SPADES), NINE_SPADES(CardValue.NINE,
+			CardSuit.SPADES), TEN_SPADES(CardValue.TEN, CardSuit.SPADES), JACK_SPADES(
+			CardValue.JACK, CardSuit.SPADES), QUEEN_SPADES(CardValue.QUEEN,
+			CardSuit.SPADES), KING_SPADES(CardValue.KING, CardSuit.SPADES), ACE_SPADES(
+			CardValue.ACE, CardSuit.SPADES),
 
-	static private final List<Card> allCards;
+	TWO_CLUBS(CardValue.TWO, CardSuit.CLUBS), THREE_CLUBS(CardValue.THREE,
+			CardSuit.CLUBS), FOUR_CLUBS(CardValue.FOUR, CardSuit.CLUBS), FIVE_CLUBS(
+			CardValue.FIVE, CardSuit.CLUBS), SIX_CLUBS(CardValue.SIX,
+			CardSuit.CLUBS), SEVEN_CLUBS(CardValue.SEVEN, CardSuit.CLUBS), EIGHT_CLUBS(
+			CardValue.EIGHT, CardSuit.CLUBS), NINE_CLUBS(CardValue.NINE,
+			CardSuit.CLUBS), TEN_CLUBS(CardValue.TEN, CardSuit.CLUBS), JACK_CLUBS(
+			CardValue.JACK, CardSuit.CLUBS), QUEEN_CLUBS(CardValue.QUEEN,
+			CardSuit.CLUBS), KING_CLUBS(CardValue.KING, CardSuit.CLUBS), ACE_CLUBS(
+			CardValue.ACE, CardSuit.CLUBS);
 
-	static {
-		final int valueCount = CardValue.values().length;
+	static private final Card[] HEARTS_CARDS = { TWO_HEARTS, THREE_HEARTS,
+			FOUR_HEARTS, FIVE_HEARTS, SIX_HEARTS, SEVEN_HEARTS, EIGHT_HEARTS,
+			NINE_HEARTS, TEN_HEARTS, JACK_HEARTS, QUEEN_HEARTS, KING_HEARTS,
+			ACE_HEARTS };
 
-		heartsCards = new Card[valueCount];
-		diamondsCards = new Card[valueCount];
-		clubsCards = new Card[valueCount];
-		spadesCards = new Card[valueCount];
-		allCards = new ArrayList<Card>();
+	static private final Card[] DIAMONDS_CARDS = { TWO_DIAMONDS,
+			THREE_DIAMONDS, FOUR_DIAMONDS, FIVE_DIAMONDS, SIX_DIAMONDS,
+			SEVEN_DIAMONDS, EIGHT_DIAMONDS, NINE_DIAMONDS, TEN_DIAMONDS,
+			JACK_DIAMONDS, QUEEN_DIAMONDS, KING_DIAMONDS, ACE_DIAMONDS };
 
-		try {
-			int i = 0;
-			for (CardValue v : CardValue.values()) {
-				heartsCards[i] = new Card(v, CardSuit.HEARTS);
-				diamondsCards[i] = new Card(v, CardSuit.DIAMONDS);
-				clubsCards[i] = new Card(v, CardSuit.CLUBS);
-				spadesCards[i] = new Card(v, CardSuit.SPADES);
-				i++;
-			}
-			allCards.addAll(Arrays.asList(heartsCards));
-			allCards.addAll(Arrays.asList(diamondsCards));
-			allCards.addAll(Arrays.asList(clubsCards));
-			allCards.addAll(Arrays.asList(spadesCards));
-		} catch (Exception e) {
+	static private final Card[] CLUBS_CARDS = { TWO_CLUBS, THREE_CLUBS,
+			FOUR_CLUBS, FIVE_CLUBS, SIX_CLUBS, SEVEN_CLUBS, EIGHT_CLUBS,
+			NINE_CLUBS, TEN_CLUBS, JACK_CLUBS, QUEEN_CLUBS, KING_CLUBS,
+			ACE_CLUBS };
 
-		}
-	}
-
-	public static List<Card> getAllCards() {
-		return allCards;
-	}
-
-	public static final Card getCard(CardValue value, CardSuit suit)
-			throws InvalidCardException {
-		final Card cards[];
-		switch (suit) {
-		case HEARTS:
-			cards = heartsCards;
-			break;
-		case DIAMONDS:
-			cards = diamondsCards;
-			break;
-		case CLUBS:
-			cards = clubsCards;
-			break;
-		case SPADES:
-			cards = spadesCards;
-			break;
-		default:
-			throw new InvalidCardException("Invalid suit");
-		}
-
-		for (Card c : cards) {
-			if (c.getValue() == value) {
-				return c;
-			}
-		}
-
-		throw new InvalidCardException("Invalid value");
-	}
+	static private final Card[] SPADES_CARDS = { TWO_SPADES, THREE_SPADES,
+			FOUR_SPADES, FIVE_SPADES, SIX_SPADES, SEVEN_SPADES, EIGHT_SPADES,
+			NINE_SPADES, TEN_SPADES, JACK_SPADES, QUEEN_SPADES, KING_SPADES,
+			ACE_SPADES };
 
 	private CardSuit suit;
 
@@ -102,49 +87,68 @@ public class Card implements Comparable<Card> {
 	 * @throws InvalidCardException
 	 *             if the value / suit is invalid
 	 */
-	private Card(CardValue value, CardSuit suit) throws InvalidCardException {
+	private Card(CardValue value, CardSuit suit) {
 		this.value = value;
 		this.suit = suit;
 	}
 
 	/**
-	 * Constructor creates a card from the specified value / suit.
+	 * Get a card with the specified value and suit.
 	 * 
-	 * @param valueSuit
-	 *            value / suit, although suit / value is acceptable
-	 * @throws Exception
-	 *             if the value / suit is invalid
+	 * @param value
+	 * @param suit
+	 * @return
+	 * @throws InvalidCardException
 	 */
-	public Card(String valueSuit) throws Exception {
-		final char c1 = valueSuit.charAt(0);
-		final char c2 = valueSuit.charAt(1);
-
-		// Try values, suits and then suits, values
-		try {
-			this.suit = CardSuit.toCardSuit(c1);
-			this.value = CardValue.toCardValue(c2);
-		} catch (InvalidCardException e) {
-			// Try the other way around
-			this.suit = CardSuit.toCardSuit(c2);
-			this.value = CardValue.toCardValue(c1);
+	public static final Card getCard(CardValue value, CardSuit suit)
+			throws InvalidCardException {
+		final Card cards[];
+		switch (suit) {
+		case HEARTS:
+			cards = HEARTS_CARDS;
+			break;
+		case DIAMONDS:
+			cards = DIAMONDS_CARDS;
+			break;
+		case CLUBS:
+			cards = CLUBS_CARDS;
+			break;
+		case SPADES:
+			cards = SPADES_CARDS;
+			break;
+		default:
+			throw new InvalidCardException("Invalid suit");
 		}
-	}
-
-	public static Card fromString(String valueSuit) {
-		try {
-			return new Card(valueSuit);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		for (Card c : cards) {
+			if (c.getValue() == value) {
+				return c;
+			}
 		}
+		throw new InvalidCardException("Invalid value");
 	}
 
 	/**
-	 * Constructor creates a card from the supplied card
+	 * Parse a string and obtain the equivalent card
+	 * 
+	 * @param valueSuit
+	 * @return
+	 * @throws InvalidCardException
 	 */
-	public Card(Card card) {
-		suit = card.getSuit();
-		value = card.getValue();
+	public static Card fromString(String valueSuit) throws InvalidCardException {
+		final char c1 = valueSuit.charAt(0);
+		final char c2 = valueSuit.charAt(1);
+
+		CardSuit suit;
+		CardValue value;
+		try {
+			suit = CardSuit.toCardSuit(c1);
+			value = CardValue.toCardValue(c2);
+		} catch (InvalidCardException e) {
+			// Try the other way around
+			suit = CardSuit.toCardSuit(c2);
+			value = CardValue.toCardValue(c1);
+		}
+		return getCard(value, suit);
 	}
 
 	/**
@@ -152,17 +156,6 @@ public class Card implements Comparable<Card> {
 	 */
 	public CardSuit getSuit() {
 		return suit;
-	}
-
-	/**
-	 * Compare the value of this card to another
-	 * 
-	 * @param other
-	 * @return 0 if values are the same, 1 if this card has a higher value,
-	 *         otherwise -1
-	 */
-	public int compareValue(Card other) {
-		return value.compare(other.getValue());
 	}
 
 	public boolean isGreaterValueByOne(Card other) {
@@ -254,63 +247,17 @@ public class Card implements Comparable<Card> {
 		return (value == this.value);
 	}
 
-	public boolean isValueOneHigher(char value) {
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((suit == null) ? 0 : suit.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final Card other = (Card) obj;
-		if (suit == null) {
-			if (other.suit != null)
-				return false;
-		} else if (!suit.equals(other.suit)) {
-			return false;
-		}
-		if (value == null) {
-			if (other.value != null) {
-				return false;
-			}
-		} else if (!value.equals(other.value)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Compare this card to another to determine which is higher. For comparison
-	 * purposes we use the value and the suit, to ensure consistent ordering
-	 * 
-	 * @param other
-	 *            card
-	 * @return -1 if less than the other card, 0 if equal and 1 otherwise
-	 */
-	@Override
-	public int compareTo(Card c) {
-		int valueComp = value.compare(c.value);
+	public static int compareCards(Card card1, Card card2) {
+		int valueComp = CardValue.compareValues(card1.getValue(), card2.getValue());
 		if (valueComp != 0)
 			return valueComp;
-		int suitComp = suit.compareTo(c.suit);
+		int suitComp = card2.getSuit().compareTo(card2.getSuit());
 		if (suitComp != 0)
 			return suitComp;
 		return 0;
+	}
+	
+	public static int compareValues(Card card1, Card card2) {
+		return CardValue.compareValues(card1.getValue(), card2.getValue());
 	}
 }

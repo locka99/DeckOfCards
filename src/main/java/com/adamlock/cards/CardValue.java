@@ -5,31 +5,43 @@
  */
 package com.adamlock.cards;
 
-/**
- * An enumeration which defines the value of every card.
- * 
- * @author Adam
- */
 public enum CardValue {
-	TWO('2', "Two", 0x0001), THREE('3', "Three", 0x0002), FOUR('4', "Four",
-			0x0004), FIVE('5', "Five", 0x0008), SIX('6', "Six", 0x0010), SEVEN(
-			'7', "Seven", 0x0020), EIGHT('8', "Eight", 0x0040), NINE('9',
-			"Nine", 0x0080), TEN('T', "Ten", 0x0100), JACK('J', "Jack", 0x0200), QUEEN(
-			'Q', "Queen", 0x0400), KING('K', "King", 0x1000), ACE('A', "Ace",
-			0x2000);
+	TWO('2', "Two"), THREE('3', "Three"), FOUR('4', "Four"), FIVE('5', "Five"), SIX(
+			'6', "Six", "Sixes"), SEVEN('7', "Seven"), EIGHT('8', "Eight"), NINE('9',
+			"Nine"), TEN('T', "Ten"), JACK('J', "Jack"), QUEEN('Q', "Queen"), KING(
+			'K', "King"), ACE('A', "Ace");
 
 	private char value;
 
 	private String name;
+	
+	private String pluralName;
 
-	private int bit;
+	private int ordinal;
 
-	private final static String values = "23456789TJQKA";
+	private static final CardValue[] REVERSE_VALUES;
 
-	private CardValue(char value, String name, int bit) {
+	static {
+		final CardValue[] cardValues = values();
+		REVERSE_VALUES = new CardValue[cardValues.length];
+		int i = 0;
+		for (CardValue value : cardValues) {
+			REVERSE_VALUES[cardValues.length - 1 - i] = value;
+			i++;
+		}
+	}
+
+	final private static String VALUES = "23456789TJQKA";
+	
+	private CardValue(char value, String name, String pluralName) {
 		this.value = value;
 		this.name = name;
-		this.bit = bit;
+		this.pluralName = pluralName;
+		this.ordinal = VALUES.indexOf(value);
+	}
+	
+	private CardValue(char value, String name) {
+		this(value, name, name + "s");
 	}
 
 	public char getValueChar() {
@@ -37,12 +49,12 @@ public enum CardValue {
 	}
 
 	/**
-	 * Return the value as a bit in an int
+	 * Get the ordinal of the value, i.e. it's relative value
 	 * 
 	 * @return
 	 */
-	public int getValueBit() {
-		return bit;
+	public int getOrdinal() {
+		return ordinal;
 	}
 
 	/**
@@ -51,16 +63,7 @@ public enum CardValue {
 	 * @return
 	 */
 	static public CardValue[] reverseValues() {
-		final CardValue[] cardValues = CardValue.values();
-		final CardValue[] reversedCardValues = new CardValue[cardValues.length];
-
-		int i = 0;
-		for (CardValue value : cardValues) {
-			reversedCardValues[cardValues.length - 1 - i] = value;
-			i++;
-		}
-
-		return reversedCardValues;
+		return REVERSE_VALUES;
 	}
 
 	/**
@@ -71,11 +74,9 @@ public enum CardValue {
 	 * @return true if the parameter is a valid value, false otherwise
 	 */
 	static public boolean isValidValue(char value) {
-		value = Character.toUpperCase(value);
 		// Ace is special cased and can be 1 or A
-		if (value == '1')
-			value = 'A';
-		return (values.indexOf(Character.toUpperCase(value)) != -1);
+		final char v = value == '1' ? 'A' : Character.toUpperCase(value);
+		return (VALUES.indexOf(v) != -1);
 	}
 
 	/**
@@ -85,8 +86,8 @@ public enum CardValue {
 	 * @return
 	 * @throws InvalidCardException
 	 */
-	static public CardValue toCardValue(char value) throws InvalidCardException {
-		value = Character.toUpperCase(value);
+	static public CardValue toCardValue(char inValue) throws InvalidCardException {
+		char value = Character.toUpperCase(inValue);
 
 		// Ace is special cased and can be 1 or A
 		if (value == '1') {
@@ -107,32 +108,14 @@ public enum CardValue {
 	}
 
 	/**
-	 * Compare this value to another
-	 * 
-	 * @param other
-	 * @return
-	 */
-	public int compare(CardValue other) {
-		final int iThis = values.lastIndexOf(getValueChar());
-		final int iOther = values.lastIndexOf(other.getValueChar());
-		if (iThis == iOther) {
-			return 0;
-		} else if (iThis > iOther) {
-			return 1;
-		} else {
-			return -1;
-		}
-	}
-
-	/**
 	 * Checks if this value is greater by one than the other value
 	 * 
 	 * @param other
 	 * @return
 	 */
 	public boolean isGreaterValueByOne(CardValue other) {
-		final int iThis = values.lastIndexOf(getValueChar());
-		final int iOther = values.lastIndexOf(other.getValueChar());
+		final int iThis = VALUES.lastIndexOf(getValueChar());
+		final int iOther = VALUES.lastIndexOf(other.getValueChar());
 		return (iThis == iOther + 1);
 	}
 
@@ -145,15 +128,23 @@ public enum CardValue {
 	 * @return
 	 */
 	public String toString(boolean usePlural) {
-		String valueStr = name;
-		if (usePlural) {
-			valueStr = valueStr + ((this == SIX) ? "es" : "s");
-		}
-		return valueStr;
+		return usePlural ? pluralName : name;
 	}
 
 	@Override
 	public String toString() {
 		return toString(false);
+	}
+
+	public static int compareValues(CardValue value1, CardValue value2) {
+		final int ordinalThis = value1.getOrdinal();
+		final int ordinalOther = value2.getOrdinal();
+		if (ordinalThis == ordinalOther) {
+			return 0;
+		} else if (ordinalThis > ordinalOther) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 }

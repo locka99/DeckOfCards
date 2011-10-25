@@ -5,11 +5,6 @@
  */
 package com.adamlock.cards;
 
-/**
- * An enumeration that defines the suit of every card
- * 
- * @author Adam
- */
 public enum CardSuit {
 	/**
 	 * Clubs
@@ -28,7 +23,8 @@ public enum CardSuit {
 	 */
 	DIAMONDS('d');
 
-	private final static String suits = "cshd";
+	private final static String SUITS = "cshd";
+	
 	private char suit;
 
 	private CardSuit(char suit) {
@@ -47,7 +43,7 @@ public enum CardSuit {
 	 * @return true if the parameter is a valid suit, false otherwise
 	 */
 	static public boolean isValidSuit(char suit) {
-		return (suits.indexOf(Character.toLowerCase(suit)) != -1);
+		return (SUITS.indexOf(Character.toLowerCase(suit)) != -1);
 	}
 
 	/**
@@ -59,7 +55,9 @@ public enum CardSuit {
 	 * @throws InvalidCardException
 	 *             when the char is not a valid suit
 	 */
-	static public CardSuit toCardSuit(char suit) throws InvalidCardException {
+	static public CardSuit toCardSuit(char inSuit) throws InvalidCardException {
+		char suit = inSuit;
+		
 		if (!isValidSuit(suit))
 			throw new InvalidCardException("suit " + Character.toString(suit)
 					+ " is invalid");
@@ -130,15 +128,20 @@ public enum CardSuit {
 
 	@Override
 	public String toString() {
-		if (this == CLUBS)
+		if (this == CLUBS) {
 			return "Clubs";
-		else if (this == SPADES)
+		}
+		else if (this == SPADES) {
 			return "Spades";
-		else if (this == HEARTS)
+		}
+		else if (this == HEARTS) {
 			return "Hearts";
-		else if (this == DIAMONDS)
+		}
+		else if (this == DIAMONDS) {
 			return "Diamonds";
-		else
+		}
+		else {
 			return "";
+		}
 	}
 }

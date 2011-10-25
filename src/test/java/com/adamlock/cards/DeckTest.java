@@ -1,15 +1,11 @@
 /**
- * Copyright 2006. Adam Lock <adamlock@eircom.net>
+ * Copyright 2011. Adam Lock <locka99@gmail.com>
  *
- * No copying without express written permission of the author.
+ * Available as open source under the terms of LGPLv3
  */
 package com.adamlock.cards;
 
 import java.util.ArrayList;
-
-import com.adamlock.cards.Card;
-import com.adamlock.cards.Deck;
-import com.adamlock.cards.EmptyDeckException;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
