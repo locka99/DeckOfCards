@@ -6,28 +6,32 @@
 package com.adamlock.cards;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Adam Lock
- * 
- *         TODO To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class Deck implements Cloneable {
-	/**
-	 * The deck is a linked list for easy slicing and dicing.
-	 */
-	protected LinkedList<Card> deck = new LinkedList<Card>();
 
-	/**
-	 * Drawn pile allows previously drawn cards to be inspected
-	 */
-	private LinkedList<Card> drawn = new LinkedList<Card>();
+	private static final HashMap<Card, Integer> reverseCardLookup;
+
+	static {
+		reverseCardLookup = new HashMap<Card, Integer>();
+		final Card[] allCards = Card.values();
+		for (int i = 0; i < allCards.length; i++) {
+			reverseCardLookup.put(allCards[i], i);
+		}
+	}
+
+	/** The deck is 52 indices onto the 52 possible card combinations. */
+	private final Card allCards[] = Card.values();
+
+	private int deck[] = new int[52];
+	private int startOfDrawn = deck.length;
 
 	private static final Comparator<ShuffleInfo> shuffleComparator = new Comparator<ShuffleInfo>() {
 		@Override
@@ -66,9 +70,10 @@ public class Deck implements Cloneable {
 	 * Create a fresh sorted deck of 52 cards.
 	 */
 	private void createDeck() {
-		deck.clear();
-		deck.addAll(Arrays.asList(Card.values()));
-		drawn.clear();
+		for (int i = 0; i < deck.length; i++) {
+			deck[i] = i;
+		}
+		startOfDrawn = deck.length;
 	}
 
 	/**
@@ -76,68 +81,41 @@ public class Deck implements Cloneable {
 	 * deck may still be shuffled
 	 */
 	public void reset() {
-		deck.addAll(drawn);
-		drawn.clear();
+		// Put drawn marker to end
+		startOfDrawn = deck.length;
 	}
 
+	/**
+	 * Randomly shuffles the undrawn cards
+	 */
 	public void shuffle() {
+
+		final int undrawnSize = startOfDrawn;
+
 		final ArrayList<ShuffleInfo> shuffleList = new ArrayList<ShuffleInfo>(
-				deck.size());
+				undrawnSize);
 
 		// For every card in the deck, create a shuffle info consisting of a
 		// random number and the card.
-		for (Card c : deck) {
-			shuffleList.add(new ShuffleInfo(c));
+		for (int i = 0; i < undrawnSize; i++) {
+			shuffleList.add(new ShuffleInfo(deck[i]));
 		}
 
 		// Sort by the random number
 		Collections.sort(shuffleList, shuffleComparator);
 
 		// Now create the deck again in the new order
-		deck.clear();
-		for (ShuffleInfo si : shuffleList) {
-			deck.add(si.getCard());
+		for (int i = 0; i < undrawnSize; i++) {
+			deck[i] = shuffleList.get(i).getCardIndex();
 		}
 	}
 
-	/**
-	 * Remove an array of cards from the deck
-	 * 
-	 * @param cards
-	 */
-	public void removeCard(Card[] cards) {
-		if (cards == null) {
-			throw new IllegalArgumentException("Must supply cards");
+	int[] getCardIndices(Card[] cards) {
+		int cardIndices[] = new int[cards.length];
+		for (int i = 0; i < cards.length; i++) {
+			cardIndices[i] = reverseCardLookup.get(cards[i]);
 		}
-		for (Iterator<Card> i = deck.iterator(); i.hasNext();) {
-			final Card c = i.next();
-			for (Card c2 : cards) {
-				if (c == c2) {
-					i.remove();
-					drawn.add(c);
-					continue;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Remove a card from the deck
-	 * 
-	 * @param card
-	 */
-	public void removeCard(Card card) {
-		if (card == null) {
-			throw new IllegalArgumentException("Must supply a card");
-		}
-		for (Iterator<Card> i = deck.iterator(); i.hasNext();) {
-			final Card c = i.next();
-			if (c == card) {
-				i.remove();
-				drawn.add(c);
-				return;
-			}
-		}
+		return cardIndices;
 	}
 
 	/**
@@ -146,7 +124,7 @@ public class Deck implements Cloneable {
 	 * @return true if empty, false otherwise.
 	 */
 	public boolean isEmpty() {
-		return deck.isEmpty();
+		return startOfDrawn == 0;
 	}
 
 	/**
@@ -155,7 +133,7 @@ public class Deck implements Cloneable {
 	 * @return cards remaining
 	 */
 	public int size() {
-		return deck.size();
+		return startOfDrawn;
 	}
 
 	/**
@@ -167,42 +145,34 @@ public class Deck implements Cloneable {
 	 * @throws EmptyDeckException
 	 */
 	public Card[] deal(int numCards) throws EmptyDeckException {
-		return deal(numCards, true);
+		final Card[] result = new Card[numCards];
+		if (numCards < 1) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		if (startOfDrawn < numCards) {
+			throw new EmptyDeckException();
+		}
+		for (int i = 0; i < numCards; ++i) {
+			result[i] = allCards[deck[startOfDrawn - i - 1]];
+		}
+		startOfDrawn -= numCards;
+
+		return result;
 	}
 
 	/**
-	 * Deal cards from the deck and optionally put them back at the end of the
-	 * deck
-	 * 
-	 * @param numCards
-	 *            number of cards to deal
-	 * @param removeCards
-	 *            true to remove the cards, false to put them back in the dec
-	 * @return array of dealt cards
-	 * @throws EmptyDeckException
+	 * Validate all the cards
 	 */
-	public Card[] deal(int numCards, boolean removeCards)
-			throws EmptyDeckException {
-		Card[] result = new Card[numCards];
-
-		if (numCards < 1)
-			throw new IndexOutOfBoundsException();
-
-		if (removeCards && deck.size() < numCards) {
-			throw new EmptyDeckException();
-		}
-
-		for (int i = 0; i < numCards; ++i) {
-			final Card c = deck.removeFirst();
-			result[i] = c;
-			if (!removeCards) {
-				deck.add(c);
-			} else {
-				drawn.add(c);
+	void internalValidate() {
+		final Set<Card> found = new HashSet<Card>();
+		for (int i = 0; i < deck.length; i++) {
+			Card c = allCards[deck[i]];
+			if (!found.add(allCards[deck[i]])) {
+				System.out.println("Duplicate of card " + c + " in the deck!");
+				throw new RuntimeException("Duplicate card");
 			}
 		}
-
-		return result;
 	}
 
 	/**
@@ -212,33 +182,93 @@ public class Deck implements Cloneable {
 	 * @throws EmptyDeckException
 	 */
 	public Card dealOne() throws EmptyDeckException {
-		return dealOne(true);
+		// Remove the first card from the deck
+		if (startOfDrawn == 0) {
+			throw new EmptyDeckException();
+		}
+		final Card c = allCards[deck[startOfDrawn - 1]];
+		startOfDrawn--;
+		return c;
 	}
 
 	/**
-	 * Deal one card from the deck and optionally put it back
+	 * Remove an array of cards from the deck
 	 * 
-	 * @param removeIt
-	 *            true to remove the card, false to put it to the bottom
-	 * @return
-	 * @throws EmptyDeckException
+	 * @param cards
 	 */
-	public Card dealOne(boolean removeIt) throws EmptyDeckException {
-		// Remove the first card from the deck
-		if (deck.isEmpty()) {
-			throw new EmptyDeckException();
+	public int removeCard(Card[] cards) {
+		if (cards == null) {
+			throw new IllegalArgumentException("Must supply cards");
 		}
 
-		final Card c = deck.removeFirst();
-		if (!removeIt) {
-			// And put it to the back of the deck.
-			// This keeps the deck a consistent size but is obviously bad if
-			// more cards are dealt than are in the pack.
-			deck.add(c);
-		} else {
-			drawn.add(c);
+		// Produce indices for input cards
+		int cardIndices[] = getCardIndices(cards);
+
+		// Build a new deck
+		int newDeck[] = new int[deck.length];
+		int newDeckIdx = 0;
+		int cardsRemoved[] = new int[cards.length];
+		int cardsRemovedCount = 0;
+		outer: for (int i = 0; i < startOfDrawn; i++) {
+			for (int card = 0; card < cardIndices.length; card++) {
+				if (deck[i] == cardIndices[card]) {
+					// Card was found
+					cardsRemoved[cardsRemovedCount++] = cardIndices[card];
+					continue outer;
+				}
+			}
+			newDeck[newDeckIdx++] = deck[i];
 		}
-		return c;
+		if (cardsRemovedCount == 0) {
+			return 0;
+		}
+
+		final int newStartOfDrawn = newDeckIdx;
+		for (int i = 0; i < cardsRemovedCount; i++) {
+			newDeck[newStartOfDrawn + i] = cardsRemoved[i];
+		}
+		for (int i = 0; i < newDeck.length - startOfDrawn; i++) {
+			newDeck[newStartOfDrawn + cardsRemovedCount + i] = deck[startOfDrawn
+					+ i];
+		}
+		deck = newDeck;
+		startOfDrawn = newStartOfDrawn;
+
+		return cardsRemovedCount;
+	}
+
+	/**
+	 * Remove a card from the deck
+	 * 
+	 * @param card
+	 */
+	public boolean removeCard(Card card) {
+		if (card == null) {
+			throw new IllegalArgumentException("Must supply a card");
+		}
+
+		final int cardIndex = reverseCardLookup.get(card);
+
+		// Look for the card in the undrawn pile
+		int foundIndex = -1;
+		for (int i = 0; i < startOfDrawn; i++) {
+			if (deck[i] == cardIndex) {
+				foundIndex = i;
+				break;
+			}
+		}
+		if (foundIndex == -1) {
+			return false;
+		}
+
+		// Move everything left over by 1 and put card on end
+		startOfDrawn--;
+		for (int i = foundIndex; i < deck.length - 1; i++) {
+			deck[i] = deck[i + 1];
+		}
+		deck[deck.length - 1] = cardIndex;
+
+		return true;
 	}
 
 	/**
@@ -246,13 +276,46 @@ public class Deck implements Cloneable {
 	 * 
 	 * @param cards
 	 */
-	public void replaceCard(Card[] cards) {
+	public int replaceCard(Card[] cards) {
 		if (cards == null) {
 			throw new IllegalArgumentException("Must supply cards");
 		}
-		for (Card c : cards) {
-			replaceCard(c);
+		if (startOfDrawn == deck.length) {
+			return 0;
 		}
+
+		final int cardIndices[] = getCardIndices(cards);
+
+		// Build a new deck
+		final int newDeck[] = new int[deck.length];
+		int newDeckIdx = deck.length - 1;
+		final int cardsReplaced[] = new int[cards.length];
+		int cardsReplacedCount = 0;
+
+		outer: for (int i = deck.length - 1; i >= startOfDrawn; i--) {
+			for (int card = 0; card < cardIndices.length; card++) {
+				if (deck[i] == cardIndices[card]) {
+					// Card was found
+					cardsReplaced[cardsReplacedCount++] = cardIndices[card];
+					continue outer;
+				}
+			}
+			newDeck[newDeckIdx--] = deck[i];
+		}
+		if (cardsReplacedCount == 0) {
+			return 0;
+		}
+
+		final int newStartOfDrawn = startOfDrawn + cardsReplacedCount;
+		for (int i = 0; i < cardsReplacedCount; i++) {
+			newDeck[i] = cardsReplaced[i];
+		}
+		for (int i = cardsReplacedCount; i < newStartOfDrawn; i++) {
+			newDeck[i] = deck[i - cardsReplacedCount];
+		}
+		deck = newDeck;
+		startOfDrawn = newStartOfDrawn;
+		return cardsReplacedCount;
 	}
 
 	/**
@@ -261,17 +324,36 @@ public class Deck implements Cloneable {
 	 * @param card
 	 *            card to be added
 	 */
-	public void replaceCard(Card card) {
+	public boolean replaceCard(Card card) {
 		if (card == null) {
 			throw new IllegalArgumentException("Must supply a card");
 		}
-		for (Iterator<Card> i = drawn.iterator(); i.hasNext();) {
-			if (i.next() == card) {
-				i.remove();
-				deck.add(card);
-				return;
+		if (startOfDrawn == deck.length) {
+			return false;
+		}
+
+		// Look for a card in the drawn pile
+		final int cardIndex = reverseCardLookup.get(card);
+		int foundIndex = -1;
+		for (int i = startOfDrawn; i < deck.length; i++) {
+			if (deck[i] == cardIndex) {
+				foundIndex = i;
+				break;
 			}
 		}
+		if (foundIndex == -1) {
+			return false;
+		}
+
+		// We found it so move everything to the right by one so it can be put
+		// at 0
+		startOfDrawn++;
+		for (int i = foundIndex; i > 0; i--) {
+			deck[i] = deck[i - 1];
+		}
+		deck[0] = cardIndex;
+
+		return true;
 	}
 
 	/*
@@ -282,8 +364,8 @@ public class Deck implements Cloneable {
 	@Override
 	public String toString() {
 		final StringBuffer sb = new StringBuffer();
-		for (final Card c : deck) {
-			sb.append(c.toString());
+		for (int i = 0; i < startOfDrawn; i++) {
+			sb.append(allCards[deck[i]].toString());
 			sb.append("\n");
 		}
 		return sb.toString();
@@ -293,8 +375,8 @@ public class Deck implements Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		final Deck newDeck = new Deck();
-		newDeck.deck = (LinkedList<Card>) deck.clone();
-		newDeck.drawn = (LinkedList<Card>) drawn.clone();
+		newDeck.deck = deck.clone();
+		newDeck.startOfDrawn = startOfDrawn;
 		return newDeck;
 	}
 }

@@ -6,9 +6,10 @@
 package com.adamlock.cards;
 
 /**
- * An exception thrown when an invalid card is requested.
- * 
  * @author Adam Lock
+ * 
+ *         TODO To change the template for this generated type comment go to
+ *         Window - Preferences - Java - Code Style - Code Templates
  */
 public class InvalidCardException extends Exception {
 	/**

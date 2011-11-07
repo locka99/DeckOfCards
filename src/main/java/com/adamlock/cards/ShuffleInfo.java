@@ -15,15 +15,15 @@ class ShuffleInfo {
 	private final byte[] order = new byte[4];
 
 	/** The card */
-	private final Card card;
+	private final int cardIndex;
 
 	/**
 	 * Random number generator used for shuffling the deck
 	 */
 	private static final Random RANDOM = new Random();
 
-	ShuffleInfo(Card card) {
-		this.card = card;
+	ShuffleInfo(int cardIndex) {
+		this.cardIndex = cardIndex;
 		RANDOM.next(order);
 	}
 
@@ -31,7 +31,7 @@ class ShuffleInfo {
 		return order;
 	}
 
-	public Card getCard() {
-		return card;
+	public int getCardIndex() {
+		return cardIndex;
 	}
 }
