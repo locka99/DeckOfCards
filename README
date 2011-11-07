@@ -13,6 +13,7 @@ CardValue   The value of a card.
 Random      A random number generator. It utlitises either the standard Java RNG or
             a secure RNG depending on how it is called.
 
+
 Build instructions:
 
 You build using Maven like so:
@@ -24,7 +25,15 @@ Add DeckOfCards to another project by including a dependency on this POM, e.g.
 <dependency>
   <groupId>com.adamlock</groupId>
   <artifactId>DeckOfCards</artifactId>
-  <version>3.8.1</version>
-  <scope>1.0-SNAPSHOT</scope>
+  <version>1.0-SNAPSHOT</version>
 </dependency>
 
+
+Using it:
+
+Deck deck = new Deck();
+deck.shuffle();
+Card []cards = deck.deal(5);
+for (Card card : cards) {
+   System.out.println("You dealt " + card);
+}
