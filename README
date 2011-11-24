@@ -1,6 +1,25 @@
-This is an implementation of a deck of cards released under the LGPLv3. 
+This is an implementation of a deck of cards written in Java and released under
+the LGPLv3. This code forms the core of the ad-supported Android application
+ShuffleBot calculates Texas Hold 'em odds. 
+
+ShuffleBot must hundreds / thousands of game simulations on mobile devices
+so the implementation is geared towards optimal performance while maintaining a
+simple programming API. 
 
 See the COPYING file for more information about LGPLv3.
+
+DeckOfCards project home:
+
+https://github.com/locka99/DeckOfCards
+
+For info about ShuffleBot see here:
+
+https://market.android.com/details?id=com.shufflebot
+http://www.shufflebot.com/
+
+For development musings related to DeckOfCards and ShuffleBot subscribe to this feed:
+
+https://joindiaspora.com/tags/shufflebot
 
 Primary classes:
 
@@ -8,6 +27,7 @@ Deck        Represents a deck which consists of 52 cards which are drawn or
             undrawn or some combination of the two.
 Card        A card within a deck. Note cards are immutable and only 52 ever exist 
             irrespective of the number of references to them.
+CardPattern A wildcard that represent one or more cards based on a pattern.
 CardSuit    The suit of a card
 CardValue   The value of a card.
 Random      A random number generator. It utlitises either the standard Java RNG or
