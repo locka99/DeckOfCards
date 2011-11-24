@@ -1,10 +1,10 @@
 This is an implementation of a deck of cards written in Java and released under
 the LGPLv3. This code forms the core of the ad-supported Android application
-ShuffleBot calculates Texas Hold 'em odds. 
+ShuffleBot which calculates Texas Hold 'Em odds. 
 
-ShuffleBot must hundreds / thousands of game simulations on mobile devices
-so the implementation is geared towards optimal performance while maintaining a
-simple programming API. 
+ShuffleBot runs hundreds / thousands of game simulations on mobile devices
+so implementation of a deck is geared towards optimal performance while
+maintaining a simple programming API. 
 
 See the COPYING file for more information about LGPLv3.
 
