@@ -7,14 +7,14 @@ package com.adamlock.cards;
 
 public enum CardValue {
 	TWO('2', "Two"), THREE('3', "Three"), FOUR('4', "Four"), FIVE('5', "Five"), SIX(
-			'6', "Six", "Sixes"), SEVEN('7', "Seven"), EIGHT('8', "Eight"), NINE('9',
-			"Nine"), TEN('T', "Ten"), JACK('J', "Jack"), QUEEN('Q', "Queen"), KING(
-			'K', "King"), ACE('A', "Ace");
+			'6', "Six", "Sixes"), SEVEN('7', "Seven"), EIGHT('8', "Eight"), NINE(
+			'9', "Nine"), TEN('T', "Ten"), JACK('J', "Jack"), QUEEN('Q',
+			"Queen"), KING('K', "King"), ACE('A', "Ace"), RANDOM('?', "Random");
 
 	private char value;
 
 	private String name;
-	
+
 	private String pluralName;
 
 	private int ordinal;
@@ -31,21 +31,28 @@ public enum CardValue {
 		}
 	}
 
+	/**
+	 * Fast lookup, note random is not shown here.
+	 */
 	final private static String VALUES = "23456789TJQKA";
-	
+
 	private CardValue(char value, String name, String pluralName) {
 		this.value = value;
 		this.name = name;
 		this.pluralName = pluralName;
 		this.ordinal = VALUES.indexOf(value);
 	}
-	
+
 	private CardValue(char value, String name) {
 		this(value, name, name + "s");
 	}
 
 	public char getValueChar() {
 		return value;
+	}
+
+	public boolean isRandom() {
+		return this == RANDOM;
 	}
 
 	/**
@@ -86,7 +93,8 @@ public enum CardValue {
 	 * @return
 	 * @throws InvalidCardException
 	 */
-	static public CardValue toCardValue(char inValue) throws InvalidCardException {
+	static public CardValue toCardValue(char inValue)
+			throws InvalidCardException {
 		char value = Character.toUpperCase(inValue);
 
 		// Ace is special cased and can be 1 or A

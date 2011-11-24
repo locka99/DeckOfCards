@@ -20,7 +20,7 @@ class ShuffleInfo {
 	/**
 	 * Random number generator used for shuffling the deck
 	 */
-	private static final Random RANDOM = new Random();
+	static final Random RANDOM = new Random();
 
 	ShuffleInfo(int cardIndex) {
 		this.cardIndex = cardIndex;

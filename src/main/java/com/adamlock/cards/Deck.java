@@ -13,13 +13,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Represents a standard deck of 52 unique cards. Cards are undrawn or drawn,
+ * and can be replaced / removed between drawn and undrawn piles.
+ * 
  * @author Adam Lock
  */
 public class Deck implements Cloneable {
 
+	/** The deck is 52 indices onto the 52 possible card combinations. */
+	private static final Card allCards[] = Card.values();
+
+	/** Reverse lookup turns a card into an index */
 	private static final HashMap<Card, Integer> reverseCardLookup;
 
 	static {
+		// Make the reverse card lookup
 		reverseCardLookup = new HashMap<Card, Integer>();
 		final Card[] allCards = Card.values();
 		for (int i = 0; i < allCards.length; i++) {
@@ -27,10 +35,10 @@ public class Deck implements Cloneable {
 		}
 	}
 
-	/** The deck is 52 indices onto the 52 possible card combinations. */
-	private final Card allCards[] = Card.values();
-
-	private int deck[] = new int[52];
+	/**
+	 * Represents the entire deck of 52 cards
+	 */
+	private int deck[] = new int[allCards.length];
 	private int startOfDrawn = deck.length;
 
 	private static final Comparator<ShuffleInfo> shuffleComparator = new Comparator<ShuffleInfo>() {
@@ -51,6 +59,9 @@ public class Deck implements Cloneable {
 		}
 	};
 
+	/**
+	 * Constructor
+	 */
 	public Deck() {
 		try {
 			createDeck();
@@ -59,6 +70,11 @@ public class Deck implements Cloneable {
 		}
 	}
 
+	/**
+	 * Constructor which optionally shuffles the deck
+	 * 
+	 * @param shuffle
+	 */
 	public Deck(boolean shuffle) {
 		this();
 		if (shuffle) {
@@ -110,7 +126,13 @@ public class Deck implements Cloneable {
 		}
 	}
 
-	int[] getCardIndices(Card[] cards) {
+	/**
+	 * Get the indices for each of the requested cards
+	 * 
+	 * @param cards
+	 * @return
+	 */
+	private int[] getCardIndices(Card[] cards) {
 		int cardIndices[] = new int[cards.length];
 		for (int i = 0; i < cards.length; i++) {
 			cardIndices[i] = reverseCardLookup.get(cards[i]);
@@ -161,18 +183,63 @@ public class Deck implements Cloneable {
 		return result;
 	}
 
+	public Card[] deal(CardPattern pattern, int numCards)
+			throws EmptyDeckException {
+		if (pattern.isRandom()) {
+			return deal(numCards);
+		}
+		final Card[] cards = new Card[numCards];
+		for (int i = 0; i < numCards; i++) {
+			cards[i] = dealOne(pattern);
+		}
+		return cards;
+	}
+
 	/**
-	 * Validate all the cards
+	 * Deal a card which matches the specified pattern
+	 * 
+	 * @param pattern
+	 * @return a card matching the pattern or null if no match was possible
 	 */
-	void internalValidate() {
-		final Set<Card> found = new HashSet<Card>();
-		for (int i = 0; i < deck.length; i++) {
-			Card c = allCards[deck[i]];
-			if (!found.add(allCards[deck[i]])) {
-				System.out.println("Duplicate of card " + c + " in the deck!");
-				throw new RuntimeException("Duplicate card");
+	public Card dealOne(CardPattern pattern) throws EmptyDeckException {
+		if (pattern.isRandom()) {
+			return dealOne();
+		}
+		for (int i = startOfDrawn - 1; i >= 0; i--) {
+			final Card card = allCards[deck[i]];
+			if (pattern.matches(card)) {
+				removeCard(card);
+				return card;
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * Deal cards which match the specified patterns. Note the resulting array
+	 * could contain nulls if no match is possible.
+	 * 
+	 * @param patterns
+	 * @return
+	 */
+	public Card[] deal(CardPattern patterns[]) throws EmptyDeckException {
+		final Card[] result = new Card[patterns.length];
+
+		int patternIdx = 0;
+		for (CardPattern pattern : patterns) {
+			if (pattern != null) {
+				for (int i = startOfDrawn - 1; i >= 0; i--) {
+					final Card card = allCards[deck[i]];
+					if (pattern.matches(card)) {
+						removeCard(card);
+						result[patternIdx] = card;
+						break;
+					}
+				}
+			}
+			patternIdx++;
+		}
+		return result;
 	}
 
 	/**
@@ -192,9 +259,74 @@ public class Deck implements Cloneable {
 	}
 
 	/**
-	 * Remove an array of cards from the deck
+	 * Draw a card randomly from somewhere out of the undrawn deck.
+	 * 
+	 * @return
+	 * @throws EmptyDeckException
+	 */
+	public Card dealRandom() throws EmptyDeckException {
+		if (startOfDrawn == 0) {
+			throw new EmptyDeckException();
+		}
+		final int randomIdx = ShuffleInfo.RANDOM.nextInt(startOfDrawn);
+		final Card card = allCards[deck[randomIdx]];
+		removeCardAt(randomIdx);
+		return card;
+	}
+
+	/**
+	 * Remove a card from the undrawn pile in the deck. Card is placed at end of
+	 * drawn pile. If the card is undrawn it will not be moved.
+	 * 
+	 * @param card
+	 * @return true if card was returned, false if it didn't need to be
+	 */
+	public boolean removeCard(Card card) {
+		if (card == null) {
+			throw new IllegalArgumentException("Must supply a card");
+		}
+
+		final int cardIndex = reverseCardLookup.get(card);
+
+		// Look for the card in the undrawn pile
+		int foundIndex = -1;
+		for (int i = 0; i < startOfDrawn; i++) {
+			if (deck[i] == cardIndex) {
+				foundIndex = i;
+				break;
+			}
+		}
+		if (foundIndex == -1) {
+			return false;
+		}
+
+		// Move everything left over by 1 and put card on end
+		removeCardAt(foundIndex);
+		return true;
+	}
+
+	/**
+	 * Remove a card at the specified position from the undrawn to the drawn
+	 * pile
+	 * 
+	 * @param position
+	 *            position to remove card from.
+	 */
+	private void removeCardAt(int position) {
+		final int cardIndex = deck[position];
+		startOfDrawn--;
+		for (int i = position; i < deck.length - 1; i++) {
+			deck[i] = deck[i + 1];
+		}
+		deck[deck.length - 1] = cardIndex;
+	}
+
+	/**
+	 * Remove an array of cards from the undrawn pile in the deck and put them
+	 * at the end of the drawn pile.
 	 * 
 	 * @param cards
+	 * @return the number of cards actually removed
 	 */
 	public int removeCard(Card[] cards) {
 		if (cards == null) {
@@ -238,20 +370,26 @@ public class Deck implements Cloneable {
 	}
 
 	/**
-	 * Remove a card from the deck
+	 * Replaces a card from the drawn pile back onto the end of the undrawn
+	 * pile..
 	 * 
 	 * @param card
+	 *            card to be added
+	 * @return true if the card was returned to the undrawn pile, false if it
+	 *         wasn't
 	 */
-	public boolean removeCard(Card card) {
+	public boolean replaceCard(Card card) {
 		if (card == null) {
 			throw new IllegalArgumentException("Must supply a card");
 		}
+		if (startOfDrawn == deck.length) {
+			return false;
+		}
 
+		// Look for a card in the drawn pile
 		final int cardIndex = reverseCardLookup.get(card);
-
-		// Look for the card in the undrawn pile
 		int foundIndex = -1;
-		for (int i = 0; i < startOfDrawn; i++) {
+		for (int i = startOfDrawn; i < deck.length; i++) {
 			if (deck[i] == cardIndex) {
 				foundIndex = i;
 				break;
@@ -261,20 +399,24 @@ public class Deck implements Cloneable {
 			return false;
 		}
 
-		// Move everything left over by 1 and put card on end
-		startOfDrawn--;
-		for (int i = foundIndex; i < deck.length - 1; i++) {
-			deck[i] = deck[i + 1];
+		// We found it so move everything to the right by one so it can be put
+		// at 0
+		startOfDrawn++;
+		for (int i = foundIndex; i > 0; i--) {
+			deck[i] = deck[i - 1];
 		}
-		deck[deck.length - 1] = cardIndex;
+		deck[0] = cardIndex;
 
 		return true;
 	}
 
 	/**
-	 * Add an array of cards to the deck
+	 * Replaces cards from the drawn pile back to the undrawn pile. The go at
+	 * the end of the drawn pile. Cards which are not in the drawn pile will not
+	 * be moved.
 	 * 
 	 * @param cards
+	 * @return the number of cards returned to the undrawn pile.
 	 */
 	public int replaceCard(Card[] cards) {
 		if (cards == null) {
@@ -319,41 +461,17 @@ public class Deck implements Cloneable {
 	}
 
 	/**
-	 * Replaces a card from the drawn pile back onto the end of the deck.
-	 * 
-	 * @param card
-	 *            card to be added
+	 * Validate all the cards
 	 */
-	public boolean replaceCard(Card card) {
-		if (card == null) {
-			throw new IllegalArgumentException("Must supply a card");
-		}
-		if (startOfDrawn == deck.length) {
-			return false;
-		}
-
-		// Look for a card in the drawn pile
-		final int cardIndex = reverseCardLookup.get(card);
-		int foundIndex = -1;
-		for (int i = startOfDrawn; i < deck.length; i++) {
-			if (deck[i] == cardIndex) {
-				foundIndex = i;
-				break;
+	void internalValidate() {
+		final Set<Card> found = new HashSet<Card>();
+		for (int i = 0; i < deck.length; i++) {
+			Card c = allCards[deck[i]];
+			if (!found.add(allCards[deck[i]])) {
+				System.out.println("Duplicate of card " + c + " in the deck!");
+				throw new RuntimeException("Duplicate card");
 			}
 		}
-		if (foundIndex == -1) {
-			return false;
-		}
-
-		// We found it so move everything to the right by one so it can be put
-		// at 0
-		startOfDrawn++;
-		for (int i = foundIndex; i > 0; i--) {
-			deck[i] = deck[i - 1];
-		}
-		deck[0] = cardIndex;
-
-		return true;
 	}
 
 	/*
@@ -371,7 +489,6 @@ public class Deck implements Cloneable {
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		final Deck newDeck = new Deck();

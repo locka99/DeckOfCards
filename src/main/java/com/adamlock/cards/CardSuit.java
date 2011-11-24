@@ -21,10 +21,14 @@ public enum CardSuit {
 	/**
 	 * Diamonds
 	 */
-	DIAMONDS('d');
+	DIAMONDS('d'),
+	/**
+	 * Random suit
+	 */
+	RANDOM('!');
 
 	private final static String SUITS = "cshd";
-	
+
 	private char suit;
 
 	private CardSuit(char suit) {
@@ -57,7 +61,7 @@ public enum CardSuit {
 	 */
 	static public CardSuit toCardSuit(char inSuit) throws InvalidCardException {
 		char suit = inSuit;
-		
+
 		if (!isValidSuit(suit))
 			throw new InvalidCardException("suit " + Character.toString(suit)
 					+ " is invalid");
@@ -126,21 +130,28 @@ public enum CardSuit {
 		return (this == CardSuit.HEARTS);
 	}
 
+	/**
+	 * Tests if the card suit is random.
+	 * 
+	 * @return
+	 */
+	public boolean isRandom() {
+		return (this == CardSuit.RANDOM);
+	}
+
 	@Override
 	public String toString() {
 		if (this == CLUBS) {
 			return "Clubs";
-		}
-		else if (this == SPADES) {
+		} else if (this == SPADES) {
 			return "Spades";
-		}
-		else if (this == HEARTS) {
+		} else if (this == HEARTS) {
 			return "Hearts";
-		}
-		else if (this == DIAMONDS) {
+		} else if (this == DIAMONDS) {
 			return "Diamonds";
-		}
-		else {
+		} else if (this == RANDOM) {
+			return "Random";
+		} else {
 			return "";
 		}
 	}
