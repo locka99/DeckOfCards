@@ -49,6 +49,11 @@ Add DeckOfCards to another project by including a dependency on this POM, e.g.
 </dependency>
 
 
+For use in GWT, import the DeckOfCards project into your build and add this line to your module:
+
+<inherits name="com.adamlock.DeckOfCards" />
+
+
 Using it:
 
 Deck deck = new Deck();
