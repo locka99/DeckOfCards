@@ -107,31 +107,45 @@ public class CardPattern {
 	private final Set<CardPattern> cardPatterns;
 
 	private CardPattern() {
-		this(Type.RANDOM, CardSuit.RANDOM, CardValue.RANDOM, null);
+		this(CardValue.RANDOM, CardSuit.RANDOM);
 	}
 
 	private CardPattern(Card card) {
-		this(Type.EXACT, card != null ? card.getSuit() : null,
-				card != null ? card.getValue() : null, null);
+		this(card != null ? card.getValue() : null,
+				card != null ? card.getSuit() : null);
 	}
 
 	private CardPattern(CardValue value, CardSuit suit) {
-		this(Type.EXACT, suit, value, null);
+		if (value == CardValue.RANDOM && suit == CardSuit.RANDOM) {
+			this.type = Type.RANDOM;
+		} else if (value == CardValue.RANDOM && suit != null) {
+			this.type = Type.ANY_VALUE;
+		} else if (value != null && suit == CardSuit.RANDOM) {
+			this.type = Type.ANY_SUIT;
+		} else if (value != null && suit != null) {
+			this.type = Type.EXACT;
+		} else {
+			throw new IllegalArgumentException(
+					"Suit or value were null and should not be");
+		}
+		this.suit = suit;
+		this.value = value;
+		this.cardPatterns = null;
 	}
 
 	private CardPattern(CardSuit suit) {
-		this(Type.ANY_VALUE, suit, CardValue.RANDOM, null);
+		this(CardValue.RANDOM, suit);
 	}
 
 	private CardPattern(CardValue value) {
-		this(Type.ANY_SUIT, CardSuit.RANDOM, value, null);
+		this(value, CardSuit.RANDOM);
 	}
 
 	private CardPattern(Set<CardPattern> cardPatterns) {
 		this(Type.CONTAINED_BY_SET, null, null, cardPatterns);
 	}
 
-	private CardPattern(Type type, CardSuit suit, CardValue value,
+	private CardPattern(Type type, CardValue value, CardSuit suit,
 			Set<CardPattern> cardPatterns) {
 		this.type = type;
 		this.suit = suit;
@@ -206,7 +220,8 @@ public class CardPattern {
 	}
 
 	public Card getCard() {
-		if (suit != null && value != null) {
+		if (suit != null && suit != CardSuit.RANDOM && value != null
+				&& value != CardValue.RANDOM) {
 			try {
 				return Card.getCard(value, suit);
 			} catch (InvalidCardException e) {
@@ -229,6 +244,28 @@ public class CardPattern {
 			return (cardPatterns != null & cardPatterns.size() > 0);
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		switch (type) {
+		case EXACT:
+			try {
+				return Card.getCard(value, suit).toLongString();
+			} catch (InvalidCardException e) {
+				e.printStackTrace();
+				break;
+			}
+		case ANY_SUIT:
+			return value.toString() + " of ???";
+		case ANY_VALUE:
+			return "??? of " + suit.toString();
+		case CONTAINED_BY_SET:
+			return "<multiple>";
+		case RANDOM:
+			return "??? of ???";
+		}
+		return "";
 	}
 
 }

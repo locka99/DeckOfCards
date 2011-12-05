@@ -222,22 +222,36 @@ public class Deck implements Cloneable {
 	 * @param patterns
 	 * @return
 	 */
-	public Card[] deal(CardPattern patterns[]) throws EmptyDeckException {
+	public Card[] deal(CardPattern patterns[]) throws EmptyDeckException,
+			InvalidCardException {
 		final Card[] result = new Card[patterns.length];
 
+		// Two passes, draw exact cards before looking at patterns
 		int patternIdx = 0;
-		for (CardPattern pattern : patterns) {
-			if (pattern != null) {
-				for (int i = startOfDrawn - 1; i >= 0; i--) {
-					final Card card = allCards[deck[i]];
-					if (pattern.matches(card)) {
-						removeCard(card);
-						result[patternIdx] = card;
-						break;
+		for (int pass = 0; pass < 2; pass++) {
+			for (CardPattern pattern : patterns) {
+				if (pattern == null) {
+					continue;
+				}
+				if ((pass == 0 && pattern.isExact())
+						|| (pass == 1 && !pattern.isExact())) {
+					Card foundCard = null;
+					for (int i = startOfDrawn - 1; i >= 0; i--) {
+						final Card card = allCards[deck[i]];
+						if (pattern.matches(card)) {
+							foundCard = card;
+							break;
+						}
+					}
+					if (foundCard != null) {
+						removeCard(foundCard);
+						result[patternIdx++] = foundCard;
+					}
+					else {
+						throw new InvalidCardException(pattern, "Pattern does not match any card in the deck");
 					}
 				}
 			}
-			patternIdx++;
 		}
 		return result;
 	}

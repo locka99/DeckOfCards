@@ -17,7 +17,19 @@ public class InvalidCardException extends Exception {
      */
 	private static final long serialVersionUID = -2493771308441907080L;
 
+	private final CardPattern cardPattern;
+	
 	public InvalidCardException(String error) {
 		super(error);
+		this.cardPattern = null;
+	}
+	
+	public InvalidCardException(CardPattern cardPattern, String error) {
+		super(error);
+		this.cardPattern = cardPattern;
+	}
+
+	public CardPattern getCardPattern() {
+		return cardPattern;
 	}
 }
