@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.adamlock.cards.Card;
-import com.adamlock.cards.Deck;
+import com.adamlock.cards.DeckImpl;
 import com.adamlock.cards.EmptyDeckException;
 import junit.framework.TestCase;
 
@@ -19,15 +19,15 @@ import junit.framework.TestCase;
  */
 public class DeckTest extends TestCase {
 	
-	private Deck deck;
+	private DeckImpl deck;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		deck = new Deck();
+		deck = new DeckImpl();
 	}
 
-	private void validateDeck(Deck d) {
+	private void validateDeck(DeckImpl d) {
 		Set<Card> found = new HashSet<Card>();
 
 		int cardsInDeck = d.size();
@@ -192,7 +192,7 @@ public class DeckTest extends TestCase {
 		long startTime = System.currentTimeMillis();
 		int gamesSimulated = 0;
 		while (System.currentTimeMillis() - startTime < 3000) {
-			Deck d = new Deck();
+			DeckImpl d = new DeckImpl();
 			d.shuffle();
 			try {
 				d.replaceCard(d.deal(20));

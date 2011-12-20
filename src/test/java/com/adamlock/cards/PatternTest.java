@@ -15,7 +15,7 @@ public class PatternTest extends TestCase {
 		TestCase.assertNotNull(p);
 		TestCase.assertFalse(p.matches(null));
 
-		final Deck d = new Deck();
+		final DeckImpl d = new DeckImpl();
 		while (true) {
 			Card c;
 			try {
@@ -28,7 +28,7 @@ public class PatternTest extends TestCase {
 	}
 
 	public void testDealOne() {
-		Deck d = new Deck();
+		DeckImpl d = new DeckImpl();
 		d.shuffle();
 
 		final CardPattern p = CardPattern.fromCard(Card.EIGHT_SPADES);
@@ -44,7 +44,7 @@ public class PatternTest extends TestCase {
 	}
 
 	public void testDealMany() {
-		Deck d = new Deck();
+		DeckImpl d = new DeckImpl();
 		d.shuffle();
 
 		final CardPattern p = CardPattern.fromSuit(CardSuit.HEARTS);
@@ -67,7 +67,7 @@ public class PatternTest extends TestCase {
 		TestCase.assertNotNull(p);
 		TestCase.assertFalse(p.matches(null));
 
-		final Deck d = new Deck();
+		final DeckImpl d = new DeckImpl();
 		while (true) {
 			Card c;
 			try {
@@ -85,7 +85,7 @@ public class PatternTest extends TestCase {
 		TestCase.assertNotNull(p);
 		TestCase.assertFalse(p.matches(null));
 
-		final Deck d = new Deck();
+		final DeckImpl d = new DeckImpl();
 		while (true) {
 			Card c;
 			try {
@@ -103,7 +103,7 @@ public class PatternTest extends TestCase {
 		TestCase.assertNotNull(p);
 		TestCase.assertFalse(p.matches(null));
 
-		final Deck d = new Deck();
+		final DeckImpl d = new DeckImpl();
 		while (true) {
 			Card c;
 			try {
@@ -123,7 +123,7 @@ public class PatternTest extends TestCase {
 		TestCase.assertNotNull(p);
 		TestCase.assertFalse(p.matches(null));
 
-		final Deck d = new Deck();
+		final DeckImpl d = new DeckImpl();
 		outer: while (true) {
 			Card c;
 			try {
