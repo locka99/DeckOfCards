@@ -5,7 +5,6 @@
  */
 package com.adamlock.cards;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class PatternTest extends TestCase {

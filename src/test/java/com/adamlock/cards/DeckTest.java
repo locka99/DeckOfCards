@@ -12,13 +12,20 @@ import java.util.Set;
 import com.adamlock.cards.Card;
 import com.adamlock.cards.Deck;
 import com.adamlock.cards.EmptyDeckException;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**
  * Tests for Deck class
  */
 public class DeckTest extends TestCase {
+	
+	private Deck deck;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		deck = new Deck();
+	}
 
 	private void validateDeck(Deck d) {
 		Set<Card> found = new HashSet<Card>();
@@ -28,23 +35,37 @@ public class DeckTest extends TestCase {
 		try {
 			c = d.dealOne();
 			while (c != null) {
-				Assert.assertFalse(found.contains(c));
+				TestCase.assertFalse(found.contains(c));
 				found.add(c);
 				c = d.dealOne();
 			}
 		} catch (EmptyDeckException e) {
 			// Drop through
 		}
-		Assert.assertEquals(cardsInDeck, found.size());
+		TestCase.assertEquals(cardsInDeck, found.size());
 	}
 
-	/*
+	/**
+	 * Basic sanity test
+	 */
+	public void testBasicDeck() {
+		for (int i = 0; i < 2; i++) {
+			TestCase.assertEquals(52, deck.size());
+			try {
+				Card[] cards = deck.deal(52);
+				deck.internalValidate();
+				deck.replaceCard(cards);
+				deck.internalValidate();
+			} catch (EmptyDeckException e) {
+				TestCase.fail("deck is empty when it shouldn't be!");
+			}
+		}
+	}
+
+	/**
 	 * Class under test for Card dealOne(boolean)
 	 */
 	public void testDealOneboolean() {
-		Deck deck = new Deck();
-		if (deck.size() != 52)
-			Assert.fail("deck should have 52 cards and it doesn't!");
 		try {
 			ArrayList<Card> v = new ArrayList<Card>();
 			for (int i = 0; i < 52; i++) {
@@ -52,61 +73,58 @@ public class DeckTest extends TestCase {
 				v.add(c);
 			}
 		} catch (EmptyDeckException e) {
-			Assert.fail("deck is empty when it shouldn't be!");
+			TestCase.fail("deck is empty when it shouldn't be!");
 		}
 		if (!deck.isEmpty()) {
-			Assert.fail("deck should be empty but it isn't!");
+			TestCase.fail("deck should be empty but it isn't!");
 		}
 	}
 
 	public void testDeal() {
 		int cards = 0;
-		Deck d = new Deck();
 		try {
 			while (true) {
-				d.dealOne();
+				deck.dealOne();
 				cards++;
 			}
 		} catch (EmptyDeckException e) {
 			if (cards != 52)
-				Assert.fail("deck only dealt " + Integer.toString(cards)
+				TestCase.fail("deck only dealt " + Integer.toString(cards)
 						+ " cards");
 		}
 	}
 
 	public void testRemoveSingle() {
-		Deck d = new Deck();
-		d.shuffle();
-		Assert.assertEquals(d.removeCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-		Assert.assertEquals(d.removeCard(Card.FOUR_HEARTS), false);
-		d.internalValidate();
-		Assert.assertEquals(d.replaceCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-		Assert.assertEquals(d.replaceCard(Card.FOUR_HEARTS), false);
-		d.internalValidate();
-		Assert.assertEquals(d.removeCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-		Assert.assertEquals(d.removeCard(Card.FOUR_HEARTS), false);
+		deck.shuffle();
+		TestCase.assertEquals(deck.removeCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.removeCard(Card.FOUR_HEARTS), false);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.replaceCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.replaceCard(Card.FOUR_HEARTS), false);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.removeCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.removeCard(Card.FOUR_HEARTS), false);
+		TestCase.assertEquals(deck.replaceCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
 
-		Assert.assertEquals(d.replaceCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-
-		validateDeck(d);
+		validateDeck(deck);
 	}
-	
+
 	public void testShuffleReplace() {
-		Deck d = new Deck();
-		// Test remove / replace function even after deck is shuffled between deal & replace
+		// Test remove / replace function even after deck is shuffled between
+		// deal & replace
 		for (int i = 0; i < 10000; i++) {
-			d.shuffle();
+			deck.shuffle();
 			try {
-				Card cards[] = d.deal(5);
-				Assert.assertEquals(d.size(), 47);
-				d.shuffle();
-				Assert.assertEquals(d.removeCard(cards), 0);
-				Assert.assertEquals(d.replaceCard(cards), 5);
-				d.internalValidate();
+				Card cards[] = deck.deal(5);
+				TestCase.assertEquals(deck.size(), 47);
+				deck.shuffle();
+				TestCase.assertEquals(deck.removeCard(cards), 0);
+				TestCase.assertEquals(deck.replaceCard(cards), 5);
+				deck.internalValidate();
 			} catch (EmptyDeckException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -115,45 +133,41 @@ public class DeckTest extends TestCase {
 	}
 
 	public void testRemoveMultiple() {
-		Deck d = new Deck();
-		d.shuffle();
-		Assert.assertEquals(
-				d.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
+		deck.shuffle();
+		TestCase.assertEquals(
+				deck.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
 				2);
-		d.internalValidate();
-		Assert.assertEquals(d.replaceCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-		Assert.assertEquals(
-				d.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
+		deck.internalValidate();
+		TestCase.assertEquals(deck.replaceCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
+		TestCase.assertEquals(
+				deck.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
 				1);
-		d.internalValidate();
-		Assert.assertEquals(
-				d.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
+		deck.internalValidate();
+		TestCase.assertEquals(
+				deck.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
 				0);
-		d.internalValidate();
-		Assert.assertEquals(
-				d.replaceCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
+		deck.internalValidate();
+		TestCase.assertEquals(deck.replaceCard(new Card[] { Card.FOUR_HEARTS,
+				Card.THREE_CLUBS }), 2);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.removeCard(Card.FOUR_HEARTS), true);
+		deck.internalValidate();
+		TestCase.assertEquals(deck.replaceCard(new Card[] { Card.FOUR_HEARTS,
+				Card.THREE_CLUBS }), 1);
+		deck.internalValidate();
+		TestCase.assertEquals(
+				deck.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
 				2);
-		d.internalValidate();
-		Assert.assertEquals(d.removeCard(Card.FOUR_HEARTS), true);
-		d.internalValidate();
-		Assert.assertEquals(
-				d.replaceCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
-				1);
-		d.internalValidate();
-		Assert.assertEquals(
-				d.removeCard(new Card[] { Card.FOUR_HEARTS, Card.THREE_CLUBS }),
-				2);
-		d.internalValidate();
+		deck.internalValidate();
 
-		validateDeck(d);
+		validateDeck(deck);
 	}
 
 	public void testShuffle() {
-		Deck d = new Deck();
-		d.shuffle();
+		deck.shuffle();
 		try {
-			Card[] cards = d.deal(52);
+			Card[] cards = deck.deal(52);
 			Card[] cardsSorted = Card.values();
 			int unsortedCount = 0;
 			for (int i = 0; i < cards.length; i++) {
@@ -163,15 +177,15 @@ public class DeckTest extends TestCase {
 					unsortedCount = 0;
 				}
 				if (unsortedCount >= 10) {
-					Assert.fail("Deck is probably not shuffled properly");
+					TestCase.fail("Deck is probably not shuffled properly");
 				}
 			}
-			d.replaceCard(cards);
+			deck.replaceCard(cards);
 		} catch (EmptyDeckException e) {
-			Assert.fail("Something went wrong");
+			TestCase.fail("Something went wrong");
 		}
 
-		validateDeck(d);
+		validateDeck(deck);
 	}
 
 	public void testSpeed() {
@@ -195,42 +209,39 @@ public class DeckTest extends TestCase {
 	}
 
 	public void testDealMany() {
-		Deck d = new Deck();
-
-		d.shuffle();
-
-		Assert.assertEquals(d.size(), 52);
+		deck.shuffle();
+		TestCase.assertEquals(deck.size(), 52);
 		Set<Card> dealtCards = new HashSet<Card>();
 
 		try {
 			for (int i = 0; i < 5; i++) {
-				Card[] cards = d.deal(10);
+				Card[] cards = deck.deal(10);
 				for (Card c : cards) {
-					Assert.assertNotNull(c);
-					Assert.assertFalse(dealtCards.contains(c));
+					TestCase.assertNotNull(c);
+					TestCase.assertFalse(dealtCards.contains(c));
 					dealtCards.add(c);
 				}
 			}
 		} catch (EmptyDeckException e) {
-			Assert.fail("Deck should not be empty #1");
+			TestCase.fail("Deck should not be empty #1");
 		}
 
 		try {
-			d.deal(3);
-			Assert.fail("Deck should not be able to deal 3 cards");
+			deck.deal(3);
+			TestCase.fail("Deck should not be able to deal 3 cards");
 		} catch (EmptyDeckException e) {
 
 		}
 
 		try {
-			d.deal(2);
+			deck.deal(2);
 		} catch (EmptyDeckException e) {
-			Assert.fail("Deck should not be empty #2");
+			TestCase.fail("Deck should not be empty #2");
 		}
 
 		try {
-			d.dealOne();
-			Assert.fail("Deck should not be able to deal a card");
+			deck.dealOne();
+			TestCase.fail("Deck should not be able to deal a card");
 		} catch (EmptyDeckException e) {
 
 		}
