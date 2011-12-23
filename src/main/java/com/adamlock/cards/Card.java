@@ -53,21 +53,25 @@ public enum Card implements Comparable<Card> {
 			CardSuit.CLUBS), KING_CLUBS(CardValue.KING, CardSuit.CLUBS), ACE_CLUBS(
 			CardValue.ACE, CardSuit.CLUBS);
 
+	/** Hearts */
 	static private final Card[] HEARTS_CARDS = { TWO_HEARTS, THREE_HEARTS,
 			FOUR_HEARTS, FIVE_HEARTS, SIX_HEARTS, SEVEN_HEARTS, EIGHT_HEARTS,
 			NINE_HEARTS, TEN_HEARTS, JACK_HEARTS, QUEEN_HEARTS, KING_HEARTS,
 			ACE_HEARTS };
 
+	/** Diamonds */
 	static private final Card[] DIAMONDS_CARDS = { TWO_DIAMONDS,
 			THREE_DIAMONDS, FOUR_DIAMONDS, FIVE_DIAMONDS, SIX_DIAMONDS,
 			SEVEN_DIAMONDS, EIGHT_DIAMONDS, NINE_DIAMONDS, TEN_DIAMONDS,
 			JACK_DIAMONDS, QUEEN_DIAMONDS, KING_DIAMONDS, ACE_DIAMONDS };
 
+	/** Clubs */
 	static private final Card[] CLUBS_CARDS = { TWO_CLUBS, THREE_CLUBS,
 			FOUR_CLUBS, FIVE_CLUBS, SIX_CLUBS, SEVEN_CLUBS, EIGHT_CLUBS,
 			NINE_CLUBS, TEN_CLUBS, JACK_CLUBS, QUEEN_CLUBS, KING_CLUBS,
 			ACE_CLUBS };
 
+	/** Spades */
 	static private final Card[] SPADES_CARDS = { TWO_SPADES, THREE_SPADES,
 			FOUR_SPADES, FIVE_SPADES, SIX_SPADES, SEVEN_SPADES, EIGHT_SPADES,
 			NINE_SPADES, TEN_SPADES, JACK_SPADES, QUEEN_SPADES, KING_SPADES,
@@ -119,12 +123,11 @@ public enum Card implements Comparable<Card> {
 		default:
 			throw new InvalidCardException("Invalid suit");
 		}
-		for (Card c : cards) {
-			if (c.getValue() == value) {
-				return c;
-			}
+		final int idx = value.getOrdinal();
+		if (idx == -1) {
+			throw new InvalidCardException("Invalid value");
 		}
-		throw new InvalidCardException("Invalid value");
+		return cards[idx];
 	}
 
 	/**
@@ -248,7 +251,8 @@ public enum Card implements Comparable<Card> {
 	}
 
 	public static int compareCards(Card card1, Card card2) {
-		int valueComp = CardValue.compareValues(card1.getValue(), card2.getValue());
+		int valueComp = CardValue.compareValues(card1.getValue(),
+				card2.getValue());
 		if (valueComp != 0)
 			return valueComp;
 		int suitComp = card2.getSuit().compareTo(card2.getSuit());
@@ -256,7 +260,7 @@ public enum Card implements Comparable<Card> {
 			return suitComp;
 		return 0;
 	}
-	
+
 	public static int compareValues(Card card1, Card card2) {
 		return CardValue.compareValues(card1.getValue(), card2.getValue());
 	}

@@ -154,7 +154,7 @@ public class DeckImpl implements Cloneable, Deck {
 	}
 
 	@Override
-	public int undealtSize() {
+	public int totalSize() {
 		return allCards.length;
 	}
 

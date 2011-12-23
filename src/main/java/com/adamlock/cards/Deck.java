@@ -1,5 +1,16 @@
 package com.adamlock.cards;
 
+/**
+ * Represents a deck of cards consisting of a unique or non unique set of Card.
+ * It is possible that multi deck cards may also be derived from this type, in
+ * which case particular behaviour about replacing cards, or removing cards
+ * matching certain conditions may change to reflect the fact there are multiple
+ * instances of the same card in the deck.
+ * 
+ * @author alock
+ * @see Card
+ * @see CardPattern
+ */
 public interface Deck {
 
 	/**
@@ -9,41 +20,42 @@ public interface Deck {
 	void reset();
 
 	/**
-	 * Randomly shuffles the undrawn cards
+	 * Randomly shuffles the undrawn cards.
 	 */
 	void shuffle();
 
 	/**
-	 * Test if the deck is empty.
+	 * Test if all cards in the deck have been drawn.
 	 * 
 	 * @return true if empty, false otherwise.
 	 */
 	boolean isEmpty();
 
 	/**
-	 * Return the number of cards in the deck.
+	 * Return the number of undrawn cards remaining in the deck.
 	 * 
 	 * @return cards remaining
 	 */
 	int size();
-	
-	/**
-	 * Return the number of cards in the undealt deck.
-	 */
-	int undealtSize();
 
 	/**
-	 * Deal cards from the deck
+	 * Return the total number drawn and undrawn cards in the deck.
+	 */
+	int totalSize();
+
+	/**
+	 * Deal a number of cards from the top of the deck.
 	 * 
 	 * @param numCards
 	 *            number of cards to deal
-	 * @return array of dealt cards
+	 * @return array of drawn cards
 	 * @throws EmptyDeckException
+	 *             if the deck becomes empty before all the cards can be drawn.
 	 */
 	Card[] deal(int numCards) throws EmptyDeckException;
 
 	/**
-	 * Deal cards from the deck that match the pattern.
+	 * Deal a number of cards from the deck that match the pattern.
 	 * 
 	 * @param pattern
 	 *            the pattern the cards must correspond to
@@ -51,6 +63,7 @@ public interface Deck {
 	 *            number of cards, 1 or greater
 	 * @return
 	 * @throws EmptyDeckException
+	 *             if the deck becomes empty before all the cards can be drawn.
 	 */
 	Card[] deal(CardPattern pattern, int numCards) throws EmptyDeckException;
 
@@ -64,26 +77,32 @@ public interface Deck {
 
 	/**
 	 * Deal cards which match the specified patterns. Note the resulting array
-	 * could contain nulls if no match is possible.
+	 * could contain nulls if no match is possible for the corresponding input.
+	 * 
+	 * When dealing cards, more exact card patterns may be given first chance to
+	 * match over inexact patterns. So if the array held { Q?, Qc } then Queen
+	 * of Clubs would be removed to satisfy Qc before attempting to draw
+	 * something matching Q?.
 	 * 
 	 * @param patterns
-	 * @return
+	 *            patterns to use to deal cards
+	 * @return drawn cards or null for cards which could not be drawn.
 	 */
 	Card[] deal(CardPattern patterns[]) throws EmptyDeckException,
 			InvalidCardException;
 
 	/**
-	 * Deal one card from the deck
+	 * Deal one card from the deck.
 	 * 
-	 * @return dealt card
+	 * @return drawn card
 	 * @throws EmptyDeckException
 	 */
 	Card dealOne() throws EmptyDeckException;
 
 	/**
-	 * Draw a card randomly from somewhere out of the undrawn deck.
+	 * Tap a card randomly from anywhere in the undrawn cards and deal it.
 	 * 
-	 * @return
+	 * @return randomly drawn card
 	 * @throws EmptyDeckException
 	 */
 	Card dealRandom() throws EmptyDeckException;
