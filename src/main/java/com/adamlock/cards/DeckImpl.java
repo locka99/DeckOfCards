@@ -92,7 +92,9 @@ public class DeckImpl implements Cloneable, Deck {
 		startOfDrawn = deck.length;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#reset()
 	 */
 	public void reset() {
@@ -100,7 +102,9 @@ public class DeckImpl implements Cloneable, Deck {
 		startOfDrawn = deck.length;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#shuffle()
 	 */
 	public void shuffle() {
@@ -139,14 +143,18 @@ public class DeckImpl implements Cloneable, Deck {
 		return cardIndices;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#isEmpty()
 	 */
 	public boolean isEmpty() {
 		return startOfDrawn == 0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#size()
 	 */
 	public int size() {
@@ -158,7 +166,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return allCards.length;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#deal(int)
 	 */
 	public Card[] deal(int numCards) throws EmptyDeckException {
@@ -178,7 +188,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#deal(com.adamlock.cards.CardPattern, int)
 	 */
 	public Card[] deal(CardPattern pattern, int numCards)
@@ -193,7 +205,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return cards;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#dealOne(com.adamlock.cards.CardPattern)
 	 */
 	public Card dealOne(CardPattern pattern) throws EmptyDeckException {
@@ -210,7 +224,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#deal(com.adamlock.cards.CardPattern[])
 	 */
 	public Card[] deal(CardPattern patterns[]) throws EmptyDeckException,
@@ -218,13 +234,12 @@ public class DeckImpl implements Cloneable, Deck {
 		final Card[] result = new Card[patterns.length];
 
 		// Two passes, draw exact cards before looking at patterns
-		int patternIdx = 0;
 		for (int pass = 0; pass < 2; pass++) {
+			int patternIdx = 0;
 			for (CardPattern pattern : patterns) {
 				if (pattern == null) {
-					continue;
-				}
-				if ((pass == 0 && pattern.isExact())
+					result[patternIdx] = null;
+				} else if ((pass == 0 && pattern.isExact())
 						|| (pass == 1 && !pattern.isExact())) {
 					Card foundCard = null;
 					for (int i = startOfDrawn - 1; i >= 0; i--) {
@@ -236,18 +251,21 @@ public class DeckImpl implements Cloneable, Deck {
 					}
 					if (foundCard != null) {
 						removeCard(foundCard);
-						result[patternIdx++] = foundCard;
-					}
-					else {
-						throw new InvalidCardException(pattern, "Pattern does not match any card in the deck");
+						result[patternIdx] = foundCard;
+					} else {
+						throw new InvalidCardException(pattern,
+								"Pattern does not match any card in the deck");
 					}
 				}
+				patternIdx++;
 			}
 		}
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#dealOne()
 	 */
 	public Card dealOne() throws EmptyDeckException {
@@ -260,7 +278,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return c;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#dealRandom()
 	 */
 	public Card dealRandom() throws EmptyDeckException {
@@ -273,7 +293,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return card;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#removeCard(com.adamlock.cards.Card)
 	 */
 	public boolean removeCard(Card card) {
@@ -316,7 +338,9 @@ public class DeckImpl implements Cloneable, Deck {
 		deck[deck.length - 1] = cardIndex;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#removeCard(com.adamlock.cards.Card[])
 	 */
 	public int removeCard(Card[] cards) {
@@ -360,7 +384,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return cardsRemovedCount;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#replaceCard(com.adamlock.cards.Card)
 	 */
 	public boolean replaceCard(Card card) {
@@ -395,7 +421,9 @@ public class DeckImpl implements Cloneable, Deck {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.adamlock.cards.IDeck#replaceCard(com.adamlock.cards.Card[])
 	 */
 	public int replaceCard(Card[] cards) {
