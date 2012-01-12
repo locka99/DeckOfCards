@@ -6,6 +6,7 @@
 package com.adamlock.cards;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -497,10 +498,12 @@ public class DeckImpl implements Cloneable, Deck {
 		return sb.toString();
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public Object clone() {
 		final DeckImpl newDeck = new DeckImpl();
-		newDeck.deck = deck.clone();
+		newDeck.deck = new int[deck.length];
+		for (int i = 0; i < deck.length; i++) {
+			newDeck.deck[i] = deck[i];
+		}
 		newDeck.startOfDrawn = startOfDrawn;
 		return newDeck;
 	}

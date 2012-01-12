@@ -15,9 +15,10 @@ public class Random {
 	}
 	
 	public Random(boolean useSecureRandom) {
-		if (useSecureRandom) {
-			random = new SecureRandom();
-		} else {
+//		if (useSecureRandom) {
+//			random = new SecureRandom();
+//		} else 
+		{
 			random = new java.util.Random();
 			random.setSeed(System.currentTimeMillis());
 		}
