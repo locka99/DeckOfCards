@@ -5,23 +5,16 @@
  */
 package com.adamlock.cards;
 
-import java.security.SecureRandom;
-
 public class Random {
 	private final java.util.Random random;
 
-	public Random() {
-		this(false);
+	public Random(java.util.Random random) {
+		this.random = random;
 	}
-	
-	public Random(boolean useSecureRandom) {
-//		if (useSecureRandom) {
-//			random = new SecureRandom();
-//		} else 
-		{
-			random = new java.util.Random();
-			random.setSeed(System.currentTimeMillis());
-		}
+
+	public Random() {
+		random = new java.util.Random();
+		random.setSeed(System.currentTimeMillis());
 		random.nextInt();
 	}
 
