@@ -5,6 +5,7 @@
  */
 package com.adamlock.cards;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -172,20 +173,27 @@ public class DeckImpl implements Cloneable, Deck {
 	 * @see com.adamlock.cards.IDeck#deal(int)
 	 */
 	public Card[] deal(int numCards) throws EmptyDeckException {
-		final Card[] result = new Card[numCards];
-		if (numCards < 1) {
-			throw new IndexOutOfBoundsException();
-		}
+		return deal(numCards, new Card[numCards]);
+	}
 
+	public Card[] deal(int numCards, Card[] inCards) throws EmptyDeckException {
+		if (inCards == null) {
+			throw new IllegalArgumentException();
+		}
+		if (inCards.length < numCards) {
+			throw new IllegalArgumentException();
+		}
+		if (numCards < 1) {
+			throw new IllegalArgumentException();
+		}
 		if (startOfDrawn < numCards) {
 			throw new EmptyDeckException();
 		}
 		for (int i = 0; i < numCards; ++i) {
-			result[i] = allCards[deck[startOfDrawn - i - 1]];
+			inCards[i] = allCards[deck[startOfDrawn - i - 1]];
 		}
 		startOfDrawn -= numCards;
-
-		return result;
+		return inCards;
 	}
 
 	/*

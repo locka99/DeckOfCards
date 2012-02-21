@@ -68,6 +68,22 @@ public interface Deck {
 	Card[] deal(CardPattern pattern, int numCards) throws EmptyDeckException;
 
 	/**
+	 * Deal a number of cards from the deck that match the pattern.
+	 * 
+	 * @param numCards
+	 *            number of cards, 1 or greater
+	 * @param inCards
+	 *            an array to use / reuse to hold the result. If numCards is
+	 *            larger than the array the method will fail.
+	 * 
+	 * @return cards dealt using the input array. Only numCards will be filled,
+	 *         so remainder of array could contain junk
+	 * @throws EmptyDeckException
+	 *             if the deck becomes empty before all the cards can be drawn.
+	 */
+	Card[] deal(int numCards, Card[] inCards) throws EmptyDeckException;
+
+	/**
 	 * Deal a card which matches the specified pattern
 	 * 
 	 * @param pattern
